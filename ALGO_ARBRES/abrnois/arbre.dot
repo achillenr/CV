@@ -1,0 +1,13 @@
+digraph G {
+    "il (3)" -> "est (2)";
+    "il (3)" -> "nous (1)";
+    "nous (1)" -> "je (1)";
+    "nous (1)" -> "sommes (1)";
+    "sommes (1)" -> "vous (4)";
+    "vous (4)" -> "tes (4)";
+    "tes (4)" -> "suis (1)";
+    "tes (4)" -> "tu (5)";
+    "suis (1)" -> "sont (2)";
+    "je (1)" -> "ils (1)";
+    "est (2)" -> "es (5)";
+}
