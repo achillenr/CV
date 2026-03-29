@@ -1,0 +1,100 @@
+<project name="BackpackHero" default="jar" basedir=".">
+    
+    <!-- ============================================== -->
+    <!-- PROPRIÉTÉS DU PROJET (Variables)               -->
+    <!-- ============================================== -->
+    <property name="src.dir"     value="src"/>
+    <property name="build.dir"   value="classes"/>
+    <property name="lib.dir"     value="lib"/>
+    <property name="doc.dir"     value="docs/doc"/>
+    <property name="jar.name"    value="BackpackHero.jar"/>
+    
+    <!-- IMPORTANT : Remplace par le chemin de ta classe Main -->
+    <property name="main.class"  value="main.Main"/>
+
+    <!-- ============================================== -->
+    <!-- CLASSPATH (Gestion des librairies dans /lib)   -->
+    <!-- ============================================== -->
+    <path id="project.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- ============================================== -->
+    <!-- TARGET: CLEAN                                  -->
+    <!-- Nettoie le projet pour ne laisser que les src  -->
+    <!-- ============================================== -->
+    <target name="clean" description="Supprime les fichiers générés">
+        <delete dir="${build.dir}"/>
+        <delete dir="${doc.dir}"/>
+        <delete file="${jar.name}"/>
+        <!-- On recrée le dossier classes vide pour respecter la consigne "répertoire vide dans l'archive" -->
+        <mkdir dir="${build.dir}"/>
+    </target>
+
+    <!-- ============================================== -->
+    <!-- TARGET: COMPILE                                -->
+    <!-- Compile les sources vers le dossier classes    -->
+    <!-- ============================================== -->
+    <target name="compile" description="Compile le code source">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" 
+               destdir="${build.dir}" 
+               includeantruntime="false" 
+               debug="true"
+               release="25">
+            <classpath refid="project.classpath"/>
+            <compilerarg value="-Xlint:deprecation"/> 
+        </javac>
+        <!-- Copy resources from src/resources to the /resources/ subfolder in the build directory -->
+        <copy todir="${build.dir}/resources">
+            <fileset dir="${src.dir}/resources"/>
+        </copy>
+    </target>
+
+    <!-- ============================================== -->
+    <!-- TARGET: JAR (Défaut)                           -->
+    <!-- Crée l'exécutable avec le Manifest             -->
+    <!-- ============================================== -->
+    <target name="jar" depends="compile" description="Crée le JAR exécutable complet">
+        <jar destfile="${jar.name}" basedir="${build.dir}">
+            <!-- Fusionner la librairie Zen pour la portabilité -->
+            <zipfileset src="${lib.dir}/zen-6.0.jar" excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+        <echo message="Création du JAR ${jar.name} terminée."/>
+    </target>
+
+    <!-- ============================================== -->
+    <!-- TARGET: JAVADOC                                -->
+    <!-- Génère la documentation en Anglais             -->
+    <!-- ============================================== -->
+    <target name="javadoc" description="Génère la documentation">
+        <mkdir dir="${doc.dir}"/>
+        <javadoc sourcepath="${src.dir}" 
+                 destdir="${doc.dir}" 
+                 access="private"
+                 locale="en_US"
+                 author="true" 
+                 version="true" 
+                 use="true" 
+                 windowtitle="Backpack Hero API">
+            <classpath refid="project.classpath"/>
+        </javadoc>
+    </target>
+
+    <!-- ============================================== -->
+    <!-- TARGET: RUN                                    -->
+    <!-- Lance le jeu à partir du JAR                   -->
+    <!-- ============================================== -->
+    <target name="run" depends="jar" description="Lance l'application">
+        <java jar="${jar.name}" fork="true">
+            <classpath refid="project.classpath"/>
+        </java>
+    </target>
+
+</project>
